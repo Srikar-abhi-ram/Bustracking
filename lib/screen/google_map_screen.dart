@@ -11,6 +11,8 @@ class GoogleMapScreen extends StatefulWidget {
   
   @override
   _GoogleMapScreenState createState() => _GoogleMapScreenState();
+
+
 }
 
 class _GoogleMapScreenState extends State<GoogleMapScreen>{
@@ -18,27 +20,33 @@ class _GoogleMapScreenState extends State<GoogleMapScreen>{
   Set<Marker> _markers ={ };
   double x=17.7184 ;
   double y =83.3188 ;
-  double latitude;
-  double longitude;
+  double _latitude;
+  double _longitude;
+  
   var locationMessage ="";
   Directions _info;
   var distance;
 
-  void myNew()async{
-    var position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
-    var lat = position.latitude;
-    var long = position.longitude;
-    latitude =17.7204;
-    longitude =83.3168;
+   Future<double> get_locatio() async{
+     Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.best);
+    _latitude= position.latitude;
+    _longitude= position.longitude;
+
      }
-  static const _initialCameraPosition = CameraPosition(
-    target: LatLng(17.7294,83.3093),
+    @override
+    void initState(){
+      super.initState();
+       get_locatio();
+    }
+  static var  _initialCameraPosition = CameraPosition(
+    target: LatLng(17.6868,83.2185),
+   
     zoom: 14.5,
+    
   );
 
    _newmethod1(){
-    var _locationinmeters = GeolocatorPlatform.instance.distanceBetween(latitude,longitude,17.7294,83.3093);
+    var _locationinmeters = GeolocatorPlatform.instance.distanceBetween(_latitude,_longitude,17.7294,83.3093);
      distance = _locationinmeters;
 
   }
@@ -58,7 +66,7 @@ class _GoogleMapScreenState extends State<GoogleMapScreen>{
     setState(() {
       _markers.add(
        _home= Marker(markerId: MarkerId('1'),
-        position:  LatLng(17.7294,83.3093),
+        position:  new LatLng(_latitude,_longitude),
         infoWindow: InfoWindow(
           title: 'home',
         snippet: 'user home',
@@ -141,7 +149,7 @@ class _GoogleMapScreenState extends State<GoogleMapScreen>{
           title: Text('bus tracking'),
           centerTitle: true,
           actions: [
-            if(_home != null)
+            
             
           TextButton(
         onPressed: ()
@@ -151,7 +159,7 @@ class _GoogleMapScreenState extends State<GoogleMapScreen>{
             mapController.animateCamera(
                 CameraUpdate.newCameraPosition(
                   CameraPosition(
-                    target: LatLng(17.7294,83.3093),
+                    target: LatLng(_latitude,_longitude),
                     zoom: 14.5,
                     tilt: 60.0),
                 ),
